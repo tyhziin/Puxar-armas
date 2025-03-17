@@ -12,6 +12,7 @@
     - Certifique-se de que o servidor permite adicionar itens ao inventário via script.
     - Adapte as IDs dos itens (armas) aos IDs corretos do seu jogo.
     - Este script foi adaptado especificamente para PC.
+    - Implementação para fechar menus antigos ao abrir um novo.
 --]]
 
 local Players = game:GetService("Players")
@@ -36,10 +37,11 @@ local armas = {
 local menuAtivo = false
 local armasAtivas = false
 local teclaMenu = Enum.KeyCode.K -- Tecla para abrir/fechar o menu no PC
+local menuName = "MenuPrincipalArmas" -- Nome da GUI do menu
 
 -- Interface Gráfica
 local menuPrincipal = Instance.new("ScreenGui")
-menuPrincipal.Name = "MenuPrincipalArmas"
+menuPrincipal.Name = menuName
 menuPrincipal.Parent = playerGui
 menuPrincipal.ResetOnSpawn = false
 menuPrincipal.DisplayOrder = 1 -- Garante que o menu fique na frente de outros elementos
@@ -99,8 +101,22 @@ botaoPuxarArmas.BorderSizePixel = 0
 
 local listaArmasFrame = nil
 
+-- Função para fechar outros menus
+local function fecharOutrosMenus()
+    for _, gui in ipairs(playerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") and gui.Name ~= menuName then -- Evita fechar este menu
+            gui:Destroy()
+        end
+    end
+end
+
 -- Função para alternar a visibilidade do menu
 local function toggleMenu()
+    -- Se o menu vai abrir, fecha outros menus
+    if not menuAtivo then
+        fecharOutrosMenus()
+    end
+
     menuAtivo = not menuAtivo
     frameMenu.Visible = menuAtivo
 
@@ -177,7 +193,7 @@ botaoPuxarArmas.MouseButton1Click:Connect(function()
             botaoArma.MouseButton1Click:Connect(function()
                 -- Função para dar a arma ao jogador (ADAPTAR AO SEU SISTEMA DE INVENTÁRIO)
                 print("Dando arma: " .. nomeArma)
-                darArma(item_id)
+                darArma(item_id) -- Dando a arma a cada clique.
             end)
 
             i = i + 1
@@ -201,7 +217,7 @@ local function darArma(item_id)
     -- *** ADAPTE ESTA FUNÇÃO AO SISTEMA DE INVENTÁRIO DO SEU SERVIDOR ***
 
     -- Exemplo: Se o servidor tiver um evento remoto para dar itens:
-    -- ReplicatedStorage:WaitForChild("DarItem"):FireServer(item_id)
+     ReplicatedStorage:WaitForChild("DarItem"):FireServer(item_id)
 
     -- Ou, se você puder acessar o inventário localmente (menos comum em RP):
     -- player.Character:FindFirstChild("Inventory"):AddItem(item_id)
@@ -247,4 +263,7 @@ end
     - Otimização: Se você tiver muitas armas ou itens, considere usar
       caching e otimizar a forma como os botões são criados para evitar
       problemas de performance, especialmente em dispositivos mobile.
+
+    - Ao abrir este menu, ele fechará outros menus abertos, garantindo que apenas
+      um menu esteja ativo por vez.
 --]]
