@@ -35,7 +35,7 @@ local armas = {
 -- Variáveis de estado
 local menuAtivo = false
 local armasAtivas = false
-local teclaMenu = Enum.KeyCode.F -- Tecla para abrir o menu no PC
+local teclaMenu = Enum.KeyCode.K -- Tecla para abrir/fechar o menu no PC
 
 -- Interface Gráfica
 local menuPrincipal = Instance.new("ScreenGui")
